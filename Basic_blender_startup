@@ -1,0 +1,89 @@
+import bpy
+from math import radians
+import random as rd
+
+# clean up
+def clear_collection(collection):
+    for item in collection:
+        collection.remove(item)
+
+def clean_up():
+    clear_collection(bpy.data.cameras)
+    clear_collection(bpy.data.images)
+    clear_collection(bpy.data.lights)
+    clear_collection(bpy.data.materials)
+    clear_collection(bpy.data.meshes)
+    clear_collection(bpy.data.objects)
+    clear_collection(bpy.data.textures)
+    
+    bpy.ops.object.select_all(action= "SELECT")
+    bpy.ops.object.delete(use_global=False)
+
+# add camera, a new data camera is automaticly been created simultaneouly
+def add_camera():
+    cam_loc = (0, -2, 2)
+    rot = (radians(90), 0, 0)
+    bpy.ops.object.add(type = "CAMERA", location = cam_loc, rotation = rot) #set
+    camera = bpy.context.object
+    bpy.context.scene.camera = camera
+    camera.name = 'camera front'
+    bpy.data.cameras['Camera'].lens = 20 
+
+# add light, same as above
+def add_light():
+    bpy.ops.object.light_add(type='POINT', radius = 1.0, location = (0, 3, 3))
+    light = bpy.context.object
+    light.name = "light1"
+    bpy.data.lights["Point"].energy = 100
+
+# create a floor
+def add_floor(sz, loc, name):
+    bpy.ops.mesh.primitive_plane_add(size = sz, location = loc)
+    plane1 = bpy.context.object
+    plane1.name = name
+
+# add new material
+def new_tex(top_path,fname):
+    img = bpy.data.images.load(filepath = (top_path + fname + '.jpg'))  # load image
+    mat = bpy.data.materials.new(name = fname)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    texImage = mat.node_tree.nodes.new("ShaderNodeTexImage")
+    texImage.image = img
+    mat.node_tree.links.new(bsdf.inputs['Base Color'], texImage.outputs['Color'])
+    return mat
+
+# add the material to the object
+def link_mat_to_floor(floorname, mat):
+    if bpy.data.objects[floorname].data.materials:
+        py.data.objects[floorname].data.materials[0] = mat
+    else:
+        bpy.data.objects[floorname].data.materials.append(mat)
+    
+# random texture
+def get_random_texs(type, n):
+    geo_texs_pool= ['51_geometric', '75_wave', '100_round','hv','rsz_58_c','square']
+    nat_texs_pool= ['cladding', 'flagstone', 'pebble_dash', 'rough_wall', '48_plywood', 'tanziana']
+    if type == 'geo':
+        texs = rd.sample(geo_texs_pool, n)
+    elif type == 'nat':
+        texs = rd.sample(nat_texs_pool, n)
+    return texs
+
+def main(n):
+    top_path = 'Users/FeikaiLin/Desktop/research/wall/gray_rsz/'
+    
+    clean_up()
+    add_camera()
+    add_light()
+    sz = 8
+    texs = get_random_texs('geo', n)
+    
+    for i in range(n):
+        y = sz/2 * (2*i+1)
+        add_floor(sz, (0, y, 0), 'floor%s'%(i+1))
+        mat = new_tex(top_path, texs[i])
+        link_mat_to_floor('floor%s'%(i+1), mat)
+    print(texs)
+    
+main(3)
