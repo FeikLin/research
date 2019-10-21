@@ -1,0 +1,173 @@
+import bpy
+from math import radians
+import random as rd
+import numpy as np
+
+# clean up wall paper
+def clear_collection(collection):
+    for item in collection:
+        collection.remove(item)
+
+def clean_up():
+    clear_collection(bpy.data.images)
+    clear_collection(bpy.data.materials)
+    clear_collection(bpy.data.textures)
+    
+# add new material
+def new_mat(top_path,fname):
+    img = bpy.data.images.load(filepath = (top_path + fname + '.jpg'))  # load image
+    mat = bpy.data.materials.new(name = fname)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    texImage = mat.node_tree.nodes.new("ShaderNodeTexImage")
+    texImage.image = img
+    mat.node_tree.links.new(bsdf.inputs['Base Color'], texImage.outputs['Color'])
+    return mat
+
+# add the material to the object
+def link_mat_to_floor(obj, mat):
+    if obj.data.materials:
+        obj.data.materials[0] = mat
+    else:
+        obj.data.materials.append(mat)
+    
+# random texture
+def get_random_texs(type, n):
+    geo_texs_pool= ['51_geometric', '75_wave', '100_round','hv','rsz_58_c','square', '31_vintage', '61_striped']
+    nat_texs_pool= [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    if type == 'geo':
+        texs = rd.sample(geo_texs_pool, n)
+    elif type == 'nat':
+        texs = rd.sample(nat_texs_pool, n)
+    texs = np.array(texs)
+    return texs
+
+# set up texture for the environment
+def set_texture(type, n, x):
+    in_top_path = 'Users/FeikaiLin/Desktop/research/tex/nat_gray_rsz/'
+    
+    clean_up()
+    
+    # add floor texture
+    floor_mat = new_mat(in_top_path, 'old_raw_wood')
+    for obj in bpy.context.scene.objects:
+        if obj.name.startswith('floor'):
+            link_mat_to_floor(obj, floor_mat)
+    
+    # add wall texture
+    texs_base = get_random_texs(type, n)
+    texs = (x-1) * 12 + texs_base
+    mats = []
+    for i in range(n):
+        mats.append(new_mat(in_top_path, '%d'%texs[i]))
+
+    for plane in bpy.context.scene.objects:
+        if plane.name.startswith('plane1'):
+            if plane.name.find('.') == -1:
+                link_mat_to_floor(plane, mats[0])
+            else:
+                link_mat_to_floor(plane, mats[1])  
+        elif plane.name.startswith('plane2'):
+            if plane.name.find('.') == -1:
+                link_mat_to_floor(plane, mats[2])
+            else:
+                link_mat_to_floor(plane, mats[3]) 
+        elif plane.name.startswith('plane5'):
+            if plane.name.find('.') == -1:
+                link_mat_to_floor(plane, mats[4])
+            else:
+                link_mat_to_floor(plane, mats[5]) 
+        elif plane.name.startswith('plane6'):
+            if plane.name.find('.') == -1:
+                link_mat_to_floor(plane, mats[6])
+            else:
+                link_mat_to_floor(plane, mats[7]) 
+        elif plane.name.startswith('plane7'):
+            if plane.name.find('.') == -1:
+                link_mat_to_floor(plane, mats[8])
+            else:
+                link_mat_to_floor(plane, mats[9]) 
+        elif plane.name.startswith('plane8'):
+            if plane.name.find('.') == -1:
+                link_mat_to_floor(plane, mats[10])
+            else:
+                link_mat_to_floor(plane, mats[11]) 
+            
+    # add door
+    door_mat = new_mat(in_top_path,'door')
+    for obj in bpy.context.scene.objects:
+        if obj.name == 'door':
+            link_mat_to_floor(obj, door_mat) 
+    
+    # add rough glass
+    mat_glass = bpy.data.materials.new(name = 'rough_glass')
+    mat_glass.use_nodes = True
+    mat_glass.use_screen_refraction = True
+    bsdf = mat_glass.node_tree.nodes["Principled BSDF"]
+    bsdf.inputs['Roughness'].default_value = 0.2
+    bsdf.inputs['Transmission'].default_value = 0.8
+    color = mat_glass.node_tree.nodes.new("ShaderNodeRGB")
+    color.outputs[0].default_value = (1, 1, 1, 1)
+    mat_glass.node_tree.links.new(bsdf.inputs['Base Color'], color.outputs['Color'])
+    
+    for obj in bpy.context.scene.objects:
+        if obj.name.startswith('glass'):
+            link_mat_to_floor(obj, mat_glass)
+    return texs
+    
+# render animation 
+def render_ani(i, local, out_filename):
+    out_top_path = "Users/FeikaiLin/Desktop/research/stimuli/lens_5_linear_all_diff/"
+    bpy.data.scenes[0].render.use_border = False
+    bpy.data.scenes[0].frame_start = i
+    bpy.data.scenes[0].frame_end = i+48
+    bpy.data.scenes[0].render.image_settings.file_format = 'AVI_JPEG'
+    time_name = '%d-'%i + '%d'%(i+48)
+    bpy.data.scenes[0].render.filepath = out_top_path + local + '/' + out_filename + time_name + '.avi'
+    bpy.data.scenes[0].render.resolution_x = 1920
+    bpy.data.scenes[0].render.resolution_y = 1080
+    bpy.ops.render.render(animation=True)
+
+# render images
+def render_img(frame, local, out_filename):
+    out_top_path = "Users/FeikaiLin/Desktop/research/stimuli/lens_5_linear_all_diff/"
+    bpy.data.scenes[0].render.use_border = True
+    bpy.data.scenes[0].render.use_crop_to_border = True
+    bpy.data.scenes[0].frame_set(frame)
+    bpy.data.scenes[0].render.image_settings.file_format = 'JPEG'
+    bpy.data.scenes[0].render.filepath = out_top_path + local + '/' + out_filename + '.JPEG'
+    bpy.data.scenes[0].render.resolution_x = 2048
+    bpy.data.scenes[0].render.resolution_y = 2048
+    bpy.context.scene.render.border_min_x = 0.125
+    bpy.context.scene.render.border_min_y = 0.4
+    bpy.context.scene.render.border_max_x = 0.25
+    bpy.context.scene.render.border_max_y = 0.525
+    bpy.ops.render.render(write_still=True)
+    bpy.data.scenes[0].render.use_border = False
+    
+# generate clips for each run
+def each_repeat(tex_type, tex_num, repeat):
+    texs = set_texture(tex_type, tex_num, repeat)
+    conditions = ['open_dw', 'turn_nd', 'turn_d','glass_dw','door_dw']#
+    local = 'repeat_%i'%repeat 
+    for j in range(len(conditions)):
+        if j == 1 or j == 2:
+            continue
+        else:
+            ani_filename = conditions[j] + '_%i_'%repeat
+            render_ani(j*100, local, ani_filename)
+            render_ani(j*100+48, local, ani_filename)
+            img_filename = conditions[j] + '_%i_'%repeat
+            render_img(j*100+10, local, img_filename+'T1')
+            render_img(j*100+50, local, img_filename+'T2')
+            render_img(j*100+91, local, img_filename+'T3')
+    return texs
+
+def main(tex_type, tex_num, repeat_num):
+    texs_lists = []
+    for i in range(repeat_num):
+        repeat = i+4 
+        texs_lists.append(each_repeat(tex_type, tex_num, repeat))
+    print(texs_lists)
+    
+main('nat', 12, 3)
