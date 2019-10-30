@@ -1,0 +1,182 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<style>
+#instructions{
+	position: relative;
+	top:10%;
+	margin: 0 auto;
+	border: 2px solid gray;
+	width: 800px;
+	text-align: center;
+}
+
+#StartExperimentButton{
+	color: white;
+}
+
+#StartExperiment{
+	width: 200px;
+	text-align: center;
+	background: gray;
+	margin: 0 auto;
+}
+
+.trialDiv{
+	position: relative;
+	width: 1000px;
+	margin: 0 auto;
+	display: none;
+	text-align: center;
+}
+
+#response_div{
+	top:10%;
+}
+
+#thanks{
+	width: 200px;
+	margin:0 auto;
+	color: green;
+	display: none;
+}
+
+</style>
+
+
+<div id="instructions">
+Welcome to the blending textures study.
+<p>In this study, you will first be given a video tour for the whole environment, along with a small window of topdown view. Next the real task will start. In each trial, you will see a 2s <b>video</b> including a room with 2 different wall textures. After the video, you will see a <b>noise image</b>. Next, an <b>test image</b> will pop up and disappear quickly, followed by <b>a question asking whether this image matches with the last scene you see in the video</b>. You can choose either <b>Yes</b> or <b>No</b> byt clicking one of the button. After answering the question, next trial will automatically start.</p>
+<p>This task is completely anonymously. Your participation is voluntary and you can stop at any time. If you are ready, click the button below and the task will start very shortly.The total task is about <b>10 min</b>.</p>
+<div id="StartExperiment">
+<a href="#" id="StartExperimentButton">Start Experiment</a>
+</div></div>
+
+<div id="video_div" class="trialDiv">
+<p><video widtd="960px"	height="540px" autoplay muted id="video">
+	<source src="" type="video/mp4">
+</video></p>
+</div>
+
+<div id="fix_div" class="trialDiv">
+<p><img src="white noise.jpg" width="500" id="noise"></p>
+</div>
+
+<div id="test_div" class="trialDiv">
+<p><img src="" id="img" width="640"></p>
+</div>
+<div id="response_div" class="trialDiv">
+<p>Does this image looks like the texture in the last scence you seen?</p>
+<p><input type="radio" class="decisionButton" name="question" id="radio-a" value="True">Yes</p>
+<p><input type="radio" class="decisionButton" name="question" id="radio-b" value="False">No</p>
+<input type="hidden" name="responsetime" value="0" id="RT">
+</div>
+
+<div id="thanks">The experiment has end. Thanks for your participation.</div>
+
+
+<script>
+//roll it 6 times for 6 subjects(hits) to make sure every condition has every order. hard-code 6 hits if possible//
+var levelorder_index = [[0, 1, 2], [2, 0, 1], [1, 2, 0], [0, 2, 1], [2, 1, 0], [1, 0, 2]];
+var env = 'env_1'
+
+var top_path = 'https://blendingtex.s3.us-east-2.amazonaws.com/'
+var nTrial = 18; 
+var startTime;
+var curTrial = 0;
+var images_pool = {'open_dw_nb':['open_dw_0_T1', 'open_dw_50_T1', 'open_dw_100_T1'],
+                   'open_dw_b':['open_dw_100_T1', 'open_dw_50_T2', 'open_dw_100_T2'],
+                   'glass_dw_nb':['glass_dw_0_T1', 'glass_dw_50_T1', 'glass_dw_100_T1'],
+                   'glass_dw_b':['glass_dw_100_T1', 'glass_dw_50_T2', 'glass_dw_100_T2'],
+                   'door_dw_nb':['door_dw_0_T1', 'door_dw_50_T1', 'door_dw_100_T1'],
+                   'door_dw_b':['door_dw_100_T1', 'door_dw_50_T2', 'door_dw_100_T2']};
+var videos_pool = {'open_dw_nb':'open_dw_0-48',
+                   'open_dw_b':'open_dw_48-96',
+                   'glass_dw_nb':'glass_dw_300-348',
+                   'glass_dw_b':'glass_dw_348-396',
+                   'door_dw_nb':'door_dw_400-448',
+                   'door_dw_b':'door_dw_448-496'};
+var conds = ['open_dw_nb', 'open_dw_b', 'glass_dw_nb', 'glass_dw_b', 'door_dw_nb', 'door_dw_b']; //6//
+var TrialimgPool = new Array(nTrial);
+var TrialvidPool = new Array(nTrial);
+
+/* Fisher-Yates shuffle */
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+}
+
+function builddivs(){
+	/*reconstruct the images_pool by shuffling the order of level-displaying for each condition, based on the controlled levelorder_index*/
+	for (j=0; j<conds.length; j++){
+		input = images_pool[conds[j]];
+		index = levelorder_index[j];
+		images_pool[conds[j]] = index.map(i => input[i]);
+	}
+	conds = shuffle(conds);
+	/*construct the trial pools for this subject. loop thru the first element of all conditions first and then move to the next one*/
+	for (j=0;j<conds.length;j++){
+		for (i=0;i<images_pool[conds[j]].length;i++){
+			TrialimgPool[i*6+j] = images_pool[conds[j]][i];
+			TrialvidPool[i*6+j] = videos_pool[conds[j]];
+		}
+	}
+}
+
+function prepTrial(){
+	img_url = top_path + env +'/'+ TrialimgPool[curTrial] + '.JPEG';
+	vid_url = top_path + env +'/'+ TrialvidPool[curTrial] + '.mp4';
+	document.getElementById('img').src = img_url;
+	document.getElementById('video').src = vid_url;
+}
+
+function NextTrial(){
+	if (curTrial == 0){
+		builddivs();
+	}
+
+	if (curTrial < nTrial){
+		$('#StartExperimentButton').hide();
+		$('#instructions').hide();
+		prepTrial();
+		curTrial ++;
+		setTimeout(function(){
+			$('#video_div').show();
+			document.getElementById('video').play();
+			setTimeout(function(){
+				$('#video_div').hide();
+				$('#fix_div').show();
+				setTimeout(function(){
+					$('#fix_div').hide();
+					$('#test_div').show();
+					startTime = new Date();
+					setTimeout(function(){
+						$('#test_div').hide();
+						$('#response_div').show();
+					},500)
+				}, 500)
+			}, 2250)
+		}, 250);
+	} else {
+		$('#submitButton').show();
+		$('.trialDiv').hide();
+		$('#thanks').show();
+	}
+}
+
+function reset(){
+	$('.trialDiv').hide()
+	document.getElementById('radio-a').checked = false;
+	document.getElementById('radio-b').checked = false;
+}
+
+function radioClicked(){
+	var rt = new Date() - startTime;
+	$('#RT').val(rt);
+	console.log(rt);
+	reset();
+	NextTrial();
+}
+
+$('#StartExperimentButton').click(NextTrial);
+$('.decisionButton').click(radioClicked);
+</script>
