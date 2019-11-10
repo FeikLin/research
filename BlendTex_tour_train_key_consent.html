@@ -1,0 +1,471 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<style>
+#instructions{
+	position: relative;
+	top:5%;
+	margin: 0 auto;
+	border: 2px solid gray;
+	width: 700px;
+	text-align: center;
+	font-size: 16px;
+}
+
+.Button{
+	width: 200px;
+	text-align: center;
+	border: 2px solid blue;
+	background: rgb(234, 227, 255);
+	margin: 0 auto;
+}
+
+.tourDiv{
+	position: relative;
+	top:2%;
+	width: 1000px;
+	margin: auto;
+}
+
+#tour{
+	display: none;
+}
+
+#transition2train{
+	display: none;
+	font-size: 16px;
+	width: 600px;
+	margin: auto;
+}
+
+.trainDiv{
+	position: relative;
+	top:4%;
+	width: 1000px;
+	margin: auto;
+	text-align: center;
+}
+
+#train_video_div{
+	display: none;
+}
+
+#train_fix_div{
+	display: none;
+	padding-top: 60px;
+	padding-left:10px;
+}
+
+#train_probe_div{
+	display: none;
+}
+
+.training_response_type{
+	display: none;
+	padding-top: 120px;
+	font-size: 25px;
+}
+
+#transition2test{
+	display: none;
+	font-size: 16px;
+	width: 600px;
+	margin: auto;
+}
+
+.testDiv{
+	position: relative;
+	top:4%;
+	width: 1000px;
+	margin: auto;
+	text-align: center;
+}
+
+#video_div{
+	display: none;
+}
+
+#fix_div{
+	display: none;
+	padding-top: 60px;
+	padding-left:10px;
+}
+
+#probe_div{
+	display: none;
+}
+
+.response_type{
+	display: none;
+	padding-top: 120px;
+	font-size: 25px;
+}
+
+#thanks{
+	top:40px;
+	width: 800px;
+	margin: auto;
+	font-size: 16px;
+	color: blue;
+	display: none;
+	text-align: center;
+}
+</style>
+
+
+<div id="instructions">
+<h2>Welcome to the navigation study!</h2>
+<p>In this study, you will first be given a video tour for the whole environment, along with a small window of topdown view. Next there will be four training trials and then the study will start. In each of the trial, you will see a <b>2s video</b> of moving through a room. Each room consists of <b> two different wall papers </b>. After the video, you will see a <b>noise</b> image. Next, another <b>image</b> will pop up and disappear quickly, followed by <b>a question asking whether this image matches with the first or last wall paper you see in the video</b>. You can press <b>Arrow Left key</b> for <b>Yes</b> or press <b>Arrow Right key</b> for <b>No</b>. After answering the question, next trial will automatically start. The task takes about <b>16 min</b> to complete.</p>
+<p>This task is completely anonymously. Your participation is voluntary and you can stop at any time. If you are ready, click the button below and the task will start shortly.</p>
+<br></br>
+<p>Check the box to indicate your consent: <input type="checkbox" name="consent_check" value="agree"> I agree to participate. </p>
+<div class="Button">
+<a href="#" id="2TourButton">I want to take the tour!</a>
+</div></div>
+
+<div class= "tourDiv">
+<div id="tour">
+<p><video width="640px" height="360px" autoplay muted id="front">
+   <source src="" type="video/mp4"></video> &nbsp &nbsp &nbsp
+   <video width="256px" height="144px" autoplay muted id="topdown">
+   <source src="" type="video/mp4"></video></p>
+</div>
+<div id="transition2train">
+<p>The tour ends. The next section is the training section, which includes four trials. The exact flow of each trial will be the same as that in the real task. For each trial, please read the question carefully and answer it as soon as you can. After pressing Arrow Left for Yes or Arrow Right for No, you will get a feedback. Please continue by clicking the button below. </p>
+<div class="Button"><a href="#" id="2TrainButton">I want to get trained!</a></div>
+</div>
+</div>
+
+<div class="trainDiv">
+<div id="train_video_div">
+<p><video width="768px"	height="432px" autoplay muted id="train_video">
+	<source src="" type="video/mp4">
+</video></p></div>
+<div id="train_fix_div">
+<p><img src="https://feikailin.s3.amazonaws.com/blendingtex/white+noise.jpg" width="315" height="315" id="train_noise"></p></div>
+<div id="train_probe_div">
+<p><img src="" id="train_image" width="640"></p></div>
+<div id="train_response_div1" class="training_response_type">
+<p>Does this image look like the <b>first</b> wall paper you saw in the video?</p>
+<p> <b>Yes &#8592;</b> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &#8594;<b>No </b> </p></div>
+<div id="train_response_div2" class="training_response_type">
+<p>Does this image look like the <b>last</b> wall paper you saw in the video?</p>
+<p> <b>Yes &#8592;</b> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &#8594;<b>No </b> </p></div>
+<div id="transition2test">
+<p>The training section ends. Next, the real task will start. It will be very similar to what you have done before. However, this time you will NOT get any feedback. The images might also be distorted a little bit. Do as best as you can. Again, for each trial, please read the question carefully and answer it as soon as you can. Please start by clicking the button below.
+<div class="Button"><a href="#" id="2TestButton">I am ready for the test!</a></div></p>
+</div>
+</div>
+
+<div class = "testDiv">
+<div id="video_div">
+<p><video width="768px"	height="432px" autoplay muted id="video">
+	<source src="" type="video/mp4">
+</video></p></div>
+<div id="fix_div">
+<p><img src="https://feikailin.s3.amazonaws.com/blendingtex/white+noise.jpg" width="315" height="315" id="noise"></p></div>
+<div id="probe_div">
+<p><img src="" id="image" width="640"></p></div>
+<div id="response_div1" class="response_type">
+<p>Does this image look like the <b>first</b> wall paper you saw in the video?</p>
+<p> <b>Yes &#8592;</b> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &#8594;<b>No </b> </p></div>
+<div id="response_div2" class="response_type">
+<p>Does this image look like the <b>last</b> wall paper you saw in the video?</p>
+<p> <b>Yes &#8592;</b> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &#8594;<b>No </b> </p></div>
+</div>
+
+<div id="thanks"> The task is end. Thank you for your participation!<p> 
+If you have any feedback on the experiment, please share it below and submit.<p>
+<input type="text" id="feedback" name="feedback" placeholder="Feedback (may leave blank)"></div> 
+
+<div>
+<input type="hidden" id="RepeatNO" name="RepeatNO">
+<input type="hidden" id="BType" name="BType">
+<input type="hidden" id="Boundary" name="Boundary">
+<input type="hidden" id="ProbeLevel" name="ProbeLevel">
+<input type="hidden" id="Response" name="Response">
+<input type="hidden" id="RT" name="RT">
+<input type="hidden" id="ProbeName" name="ProbeName">
+<input type="hidden" id="VidName" name="VidName">
+<input type="hidden" id="env" name="env">
+<input type="hidden" id= "rolln" name="rolln">
+<input type="hidden" id="qn" name="qn">
+</div>
+
+
+<script>
+//roll it 6 times for 6 subjects(hits) to make sure every event has every order.//
+var probe_order = [[0, 1, 2], [2, 0, 1], [1, 2, 0], [0, 2, 1], [2, 1, 0], [1, 0, 2]]; 
+var rolln = Math.floor(Math.random()*6); // generate between [0,5]
+var env = 'env_' + Math.floor((Math.random()*4)+1); // generate between [1,4]
+//var env = 'env_1'
+var qn = Math.floor(Math.random()*2+1);
+
+var RepeatNO = ''; 
+var BType = ''; 
+var Boundary = '';
+var ProbeLevel = '';
+var Response = ''; 
+var RT = '';  
+var ProbeName = '';
+var VidName = '';
+
+var top_path = 'https://feikailin.s3.amazonaws.com/blendingtex/';
+var nBlock = 3; 
+var nProbe = 18;
+var startTime;
+var curTrial = 0;
+var curRepeat = 0;
+var totalRepeat = 4;
+var images_pool = {'open_dw_nb':['open_dw_25_T1', 'open_dw_50_T1', 'open_dw_75_T1'],
+                   'open_dw_b':['open_dw_25_T2', 'open_dw_50_T2', 'open_dw_75_T2'],
+                   'glass_dw_nb':['glass_dw_25_T1', 'glass_dw_50_T1', 'glass_dw_75_T1'],
+                   'glass_dw_b':['glass_dw_25_T2', 'glass_dw_50_T2', 'glass_dw_75_T2'],
+                   'door_dw_nb':['door_dw_25_T1', 'door_dw_50_T1', 'door_dw_75_T1'],
+                   'door_dw_b':['door_dw_25_T2', 'door_dw_50_T2', 'door_dw_75_T2']};
+var videos_pool = {'open_dw_nb':'open_dw_0-48',
+                   'open_dw_b':'open_dw_48-96',
+                   'glass_dw_nb':'glass_dw_300-348',
+                   'glass_dw_b':'glass_dw_348-396',
+                   'door_dw_nb':'door_dw_400-448',
+                   'door_dw_b':'door_dw_448-496'};
+var events = ['open_dw_nb', 'open_dw_b', 'glass_dw_nb', 'glass_dw_b', 'door_dw_nb', 'door_dw_b']; //6//
+var TrialimgPool = [[],[],[]];
+var TrialvidPool = [[],[],[]];
+var withinblock = [0,1,2,3,4,5];
+var testVid = ['test_1', 'test_2', 'test_3', 'test_4']
+var testImg = ['1_T1', '2_T1', '3_T2', '4_T2']
+var t=0
+
+/*Set the list of probe-images display orders. Done before the real experiment starts*/ 
+function roll(rolln){
+	for (i=0;i<rolln;i++){
+		var firstelment = probe_order.shift();
+		probe_order.push(firstelment);
+	};
+};
+
+/*prepare img and video pools for each subject. Done before the real experiment starts*/
+function buildpool(){
+	roll(rolln);  
+	/*reconstruct the images_pool by changing the displaying order of probe-images for each event, based on the controlled probe_order*/
+	for (var j=0;j<events.length;j++){
+		var index = probe_order[j];   
+		images_pool[events[j]] = index.map(i => images_pool[events[j]][i]);
+	};
+	/*construct the trial pools for this subject. loop thru the first probe_image of all events first to build a block and then move to the next one. In total there will be three blocks, each containing one probe_image for six events. The video is mapped with probe_image*/
+	for (var k=0;k<nBlock;k++){
+		for (var q=0;q<events.length;q++){
+			TrialimgPool[k].push(images_pool[events[q]][k]);
+			TrialvidPool[k].push(videos_pool[events[q]]);
+		};
+	};
+};
+
+function trainkey(t){
+	$(document).bind('keydown', function(event){
+		if (event.which==37){
+			if(t==0 || t==3) {
+				savedata('Correct');
+				alert('You are right! The correct answer is YES');
+				trainmode();
+				$(document).unbind('keydown');
+			} else {
+				savedata('Incorrect');
+				alert('You miss it! The correct answer is NO');
+				trainmode();
+				$(document).unbind('keydown');
+			};
+		} else if (event.which == 39){
+			if(t==1 || t==2) {
+				savedata('Correct');
+				alert('You are right! The correct answer is NO');
+				trainmode();
+				$(document).unbind('keydown');
+			} else {
+				savedata('Incorrect');
+				alert('You miss it! The correct answer is YES');
+				trainmode();
+				$(document).unbind('keydown');
+			};
+		} else {
+			alert('Please press Left arrow for Yes or Right arrow for No');
+			trainkey();
+		};
+	});
+};
+
+/* Fisher-Yates shuffle */
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+}
+
+/*shuffle the event within block, preserving the displaying order of blocks. To prepare repeat for the event*/ 
+function preprepeat(){
+	for (var j=0;j<nBlock;j++){
+		withinblock = shuffle(withinblock);
+		TrialimgPool[j] = withinblock.map(i => TrialimgPool[j][i]);
+		TrialvidPool[j] = withinblock.map(i => TrialvidPool[j][i]);
+	}; 
+};
+
+function loadtesturl(){
+	var block = Math.floor((curTrial%nProbe)/events.length);
+	var img = TrialimgPool[block][(curTrial%nProbe)%events.length];
+	var vid = TrialvidPool[block][(curTrial%nProbe)%events.length];
+	document.getElementById('image').src = top_path + env +'/'+ img + '.jpg';
+	document.getElementById('video').src = top_path + env +'/'+ vid + '.mp4';
+	ProbeName = ProbeName + ' ' + img; 
+	VidName = VidName + ' ' + vid;
+	BType = BType + ' ' + img.substring(0,5);
+	(vid.includes('96')) ? Boundary = Boundary + ' ' + 'True' : Boundary = Boundary + ' ' + 'False';
+	if (img.includes('50')) {
+		ProbeLevel = ProbeLevel + ' ' + '50';
+	} else if (img.includes('25')) {
+		ProbeLevel = ProbeLevel + ' ' + '25';
+	} else {
+		ProbeLevel = ProbeLevel + ' ' + '75';
+	};	
+};
+
+function presskey(){
+	$(document).bind('keydown', function(event){
+		if (event.which == 37){
+			savedata('True');
+			$(document).unbind('keydown');
+			testmode();
+		} else if (event.which == 39){
+			savedata('False');
+			$(document).unbind('keydown');
+			testmode();
+		} else {
+			alert('Please press Left arrow for Yes or Right arrow for No');
+			presskey();
+		};
+	});
+};
+
+function savedata(ans){
+	var rt = new Date() - startTime;
+
+	RepeatNO = RepeatNO + ' ' + curRepeat;
+	Response = Response + ' ' + ans;
+	RT = RT + ' ' + rt;
+};
+
+function exportdata(){
+	$('#RepeatNO').val(RepeatNO);
+	$('#BType').val(BType);
+	$('#Boundary').val(Boundary);
+	$('#ProbeLevel').val(ProbeLevel); 
+	$('#Response').val(Response);
+	$('#RT').val(RT);
+	$('#ProbeName').val(ProbeName);
+	$('#VidName').val(VidName);
+	$('#env').val(env);
+	$('#rolln').val(rolln);
+	$('#qn').val(qn);
+};
+
+function tourmode(){
+	document.getElementById('front').src = top_path + 'tour/' + 'front' + '.mp4';
+	document.getElementById('topdown').src = top_path + 'tour/' + 'topdown' + '.mp4';
+	$('#tour').show();
+	document.getElementById('front').play();
+	document.getElementById('topdown').play();
+	setTimeout(function(){
+		$('#tour').hide();
+		$('#transition2train').show();
+		$('#2TrainButton').click(function(){
+			$('#transition2train').hide();
+			trainmode();
+		});
+	}, 2000);//27000
+};
+
+function trainmode(){
+	$('.training_response_type').hide();
+	if (t<4) {
+		t++;
+		document.getElementById('train_video').src = top_path + 'test/' + testVid[t-1] + '.mp4';
+		document.getElementById('train_image').src = top_path + 'test/' + testImg[t-1] + '.jpg';
+		setTimeout(function(){
+			$('#train_video_div').show();
+			document.getElementById('train_video').play();
+			setTimeout(function(){
+				$('#train_video_div').hide();
+				$('#train_fix_div').show();
+				setTimeout(function(){
+					$('#train_fix_div').hide();
+					$('#train_probe_div').show();
+					setTimeout(function(){
+						$('#train_probe_div').hide();
+						if ((t-1)%2==0){
+							$('#train_response_div1').show();
+						} else {
+							$('#train_response_div2').show();
+						};
+						startTime = new Date();
+						trainkey(t-1);
+					},500);
+				},500);
+			},2250);
+		}, 500);
+	} else {
+		$('#transition2test').show();
+		$('#2TestButton').click(function(){
+			$('#transition2test').hide();
+			testmode();
+		});
+	};
+};
+
+function testmode(){
+	$('#response_div'+qn).hide();
+	if (curTrial%nProbe == 0){
+		preprepeat();
+		curRepeat ++;
+	};
+
+	if (curRepeat <= totalRepeat){
+		loadtesturl();
+		curTrial ++;
+		setTimeout(function(){
+			$('#video_div').show();
+			document.getElementById('video').play();
+			setTimeout(function(){
+				$('#video_div').hide();
+				$('#fix_div').show();
+				setTimeout(function(){
+					$('#fix_div').hide();
+					$('#probe_div').show();
+					setTimeout(function(){
+						$('#probe_div').hide();
+						$('#response_div'+qn).show();
+						startTime = new Date();
+						presskey();
+					},500);
+				}, 500);
+			}, 2250);//2250
+		}, 500);
+	} else {
+		exportdata();
+		$('#submitButton').show();
+		$('.testDiv').hide();
+		$('#thanks').show();
+	};
+};
+
+$(document).ready(function() {
+	buildpool();
+	$('#submitButton').hide();
+	$('input[type="checkbox"]').click(function(){
+		$('#2TourButton').click(function(){
+			$('#2TourButton').hide();
+			$('#instructions').hide();
+			tourmode();
+		});
+	});
+});
+
+</script>
